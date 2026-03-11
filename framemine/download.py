@@ -152,19 +152,32 @@ def resolve_input(
     output_dir: Path,
     cookies_from_browser: str | None = None,
     max_resolution: int = 720,
+    max_posts: int | None = None,
 ) -> list[MediaFile]:
     """
     High-level entry point. Routes based on source type:
 
-    1. Directory path -> discover_local_media()
-    2. .txt file path -> download_url_list()
-    3. URL (starts with http) -> download_url() single
-    4. Single file path -> wrap as MediaFile
+    1. Platform saved content (instagram:user, tiktok:user, youtube:url)
+    2. Directory path -> discover_local_media()
+    3. .txt file path -> download_url_list()
+    4. URL (starts with http) -> download_url() single
+    5. Single file path -> wrap as MediaFile
 
     Raises FileNotFoundError if local path doesn't exist.
     Raises ValueError for unrecognized source format.
-    Raises RuntimeError if URLs provided but yt-dlp not available.
+    Raises RuntimeError if required download tool is not available.
     """
+    # Platform saved content (e.g. instagram:username)
+    from .saved import is_saved_source, parse_saved_source, download_saved
+    if is_saved_source(source):
+        platform, target = parse_saved_source(source)
+        return download_saved(
+            platform, target, output_dir,
+            cookies_from_browser=cookies_from_browser,
+            max_resolution=max_resolution,
+            max_posts=max_posts,
+        )
+
     # URL input
     if source.startswith("http://") or source.startswith("https://"):
         if not check_ytdlp():

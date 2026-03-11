@@ -5,9 +5,11 @@ Extract structured data from social media reels, TikToks, and video posts using 
 ## How it works
 
 ```
-Video/Image → ffmpeg extracts keyframes locally (free)
-            → AI sees only distilled frames (cheap)
-            → Structured JSON + Excel output
+Saved posts / local files / URLs
+  → Download from platform (instaloader / yt-dlp)
+  → ffmpeg extracts keyframes locally (free)
+  → AI sees only distilled frames (cheap)
+  → Structured JSON + Excel output
 ```
 
 Most AI video analysis tools send entire videos to cloud APIs. framemine preprocesses locally with ffmpeg's scene detection, sending only the frames that matter. You get the same results at a fraction of the token cost.
@@ -27,17 +29,28 @@ Set your Gemini API key (free at [aistudio.google.com/apikey](https://aistudio.g
 export GEMINI_API_KEY="your-key-here"
 ```
 
-Run an extraction:
+Extract books from your saved Instagram reels:
 
 ```bash
-# Extract books from a folder of saved reels
-framemine extract ./my_reels/ -s books -o my_books
+framemine extract instagram:myusername -s books -o my_books
+```
 
+That's it. framemine logs into Instagram, downloads your saved posts, extracts keyframes, sends them to Gemini, deduplicates, enriches with book metadata, and writes JSON + Excel output.
+
+### More examples
+
+```bash
 # Extract recipes from a list of URLs (requires yt-dlp)
 framemine extract urls.txt -s recipes -o my_recipes
 
 # Extract products from a single TikTok (requires yt-dlp)
 framemine extract "https://tiktok.com/@user/video/123" -s products
+
+# Process a local folder of already-downloaded reels
+framemine extract ./my_reels/ -s books -o my_books
+
+# Limit to first 20 saved posts
+framemine extract instagram:myusername -s books --max-posts 20
 ```
 
 ## What you get
@@ -65,18 +78,21 @@ framemine schemas  # List all available schemas
 
 | Input | Example | Requirements |
 |-------|---------|--------------|
+| Instagram saved | `framemine extract instagram:user -s books` | instaloader |
+| TikTok user videos | `framemine extract tiktok:user -s products --cookies chrome` | yt-dlp |
+| YouTube playlist | `framemine extract youtube:PLAYLIST_URL -s recipes` | yt-dlp |
 | Local directory | `framemine extract ./reels/ -s books` | ffmpeg (for videos) |
 | Single file | `framemine extract video.mp4 -s books` | ffmpeg (for videos) |
-| URL list (.txt) | `framemine extract urls.txt -s recipes` | yt-dlp, ffmpeg (for videos) |
-| Single URL | `framemine extract "https://..." -s products` | yt-dlp, ffmpeg (for videos) |
+| URL list (.txt) | `framemine extract urls.txt -s recipes` | yt-dlp, ffmpeg |
+| Single URL | `framemine extract "https://..." -s products` | yt-dlp, ffmpeg |
 
 Images (screenshots, photos) are sent directly to the AI without ffmpeg.
 
-For private or saved posts that require login, use `--cookies` to pass browser session cookies to yt-dlp:
+### Platform authentication
 
-```bash
-framemine extract urls.txt -s books --cookies chrome
-```
+**Instagram**: instaloader handles login interactively. On first use it prompts for your password, then caches the session for subsequent runs.
+
+**TikTok / YouTube**: Use `--cookies chrome` (or firefox, etc.) to pass your browser session cookies to yt-dlp for accessing private or liked content.
 
 ## Configuration
 
@@ -131,7 +147,8 @@ framemine looks for config in this order:
 
 - **Python 3.10+**
 - **ffmpeg** — for video frame extraction ([ffmpeg.org](https://ffmpeg.org/))
-- **yt-dlp** (optional) — only needed for downloading from URLs ([github.com/yt-dlp/yt-dlp](https://github.com/yt-dlp/yt-dlp))
+- **yt-dlp** (optional) — for downloading from URLs ([github.com/yt-dlp/yt-dlp](https://github.com/yt-dlp/yt-dlp))
+- **instaloader** (optional) — for downloading Instagram saved posts (`pip install instaloader`)
 
 ```bash
 framemine check  # Verify all dependencies
@@ -142,13 +159,15 @@ framemine check  # Verify all dependencies
 ```
 framemine extract SOURCE -s SCHEMA [OPTIONS]
 
-  SOURCE is a local directory, .txt file of URLs, single URL, or media file.
+  SOURCE is a local directory, .txt file of URLs, single URL, media file,
+  or platform:username (e.g. instagram:myuser, tiktok:myuser).
 
 Options:
   -s, --schema TEXT       Extraction schema (required): books, recipes, products
   -o, --output TEXT       Output filename stem (default: schema name)
   -c, --config TEXT       Path to config YAML
-  --cookies TEXT          Browser for yt-dlp cookies (chrome, firefox, etc.)
+  --cookies TEXT          Browser for yt-dlp/platform cookies (chrome, firefox, etc.)
+  --max-posts INT         Max posts to download from saved collections
   --no-enrich             Skip metadata enrichment
   --json-only             Output JSON only, skip Excel
   --output-dir TEXT       Directory for output files (default: current directory)

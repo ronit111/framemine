@@ -56,10 +56,21 @@ fi
 if command -v yt-dlp &>/dev/null; then
     success "yt-dlp found."
 else
-    warn "yt-dlp not found. It is needed only if you want to extract from URLs."
+    warn "yt-dlp not found. Needed only for downloading from URLs or TikTok/YouTube."
     echo "  Install:"
     echo "    pip install yt-dlp"
     echo "    or: brew install yt-dlp"
+    echo ""
+fi
+
+# ── instaloader (optional) ───────────────────────────────────────────
+
+if command -v instaloader &>/dev/null; then
+    success "instaloader found."
+else
+    warn "instaloader not found. Needed only for downloading Instagram saved posts."
+    echo "  Install:"
+    echo "    pip install instaloader"
     echo ""
 fi
 

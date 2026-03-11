@@ -12,6 +12,7 @@ from . import __version__
 from .ai import create_backend
 from .dedup import deduplicate
 from .download import resolve_input, check_ytdlp
+from .saved import check_instaloader
 from .enrichment import enrich_items
 from .frames import FrameExtractionConfig, check_ffmpeg, get_frames
 from .output import write_outputs
@@ -64,6 +65,7 @@ def cli(verbose: bool) -> None:
 @click.option("--no-enrich", is_flag=True, help="Skip metadata enrichment.")
 @click.option("--json-only", is_flag=True, help="Output JSON only, no Excel.")
 @click.option("--output-dir", default=".", help="Directory for output files.")
+@click.option("--max-posts", default=None, type=int, help="Max posts to download from saved collections.")
 def extract(
     source: str,
     schema_name: str,
@@ -73,10 +75,12 @@ def extract(
     no_enrich: bool,
     json_only: bool,
     output_dir: str,
+    max_posts: int | None,
 ) -> None:
     """Run the full extraction pipeline.
 
-    SOURCE can be a local directory, a .txt file of URLs, a single URL, or a media file.
+    SOURCE can be a local directory, a .txt file of URLs, a single URL, a media
+    file, or a platform:username to pull saved content (e.g. instagram:myuser).
     """
     config = _load_config(config_path)
     ai_config = config.get("ai", {})
@@ -104,6 +108,7 @@ def extract(
                 download_dir,
                 cookies_from_browser=cookies,
                 max_resolution=dl_config.get("max_resolution", 720),
+                max_posts=max_posts,
             )
         except (FileNotFoundError, ValueError, RuntimeError) as e:
             click.echo(f"Error: {e}", err=True)
@@ -228,6 +233,12 @@ def check() -> None:
         click.echo("  yt-dlp        OK")
     else:
         click.echo("  yt-dlp        MISSING (optional, needed for URL downloads)")
+
+    # instaloader (optional)
+    if check_instaloader():
+        click.echo("  instaloader   OK")
+    else:
+        click.echo("  instaloader   MISSING (optional, needed for Instagram saved posts)")
 
     # Python packages
     packages = ["click", "google.genai", "PIL", "openpyxl", "requests", "yaml"]
