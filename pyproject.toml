@@ -45,9 +45,9 @@ dev = [
 framemine = "framemine.cli:cli"
 
 [project.urls]
-Homepage = "https://github.com/ronitchidara/framemine"
-Repository = "https://github.com/ronitchidara/framemine"
-Issues = "https://github.com/ronitchidara/framemine/issues"
+Homepage = "https://github.com/ronit111/framemine"
+Repository = "https://github.com/ronit111/framemine"
+Issues = "https://github.com/ronit111/framemine/issues"
 
 [tool.setuptools.packages.find]
 include = ["framemine*"]

@@ -15,7 +15,7 @@ Most AI video analysis tools send entire videos to cloud APIs. framemine preproc
 ## Quick start
 
 ```bash
-git clone https://github.com/ronitchidara/framemine.git
+git clone https://github.com/ronit111/framemine.git
 cd framemine
 bash setup.sh
 source .venv/bin/activate
