@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# framemine runtime
+*.xlsx
+*.json
+frames/
+downloads/
+
+# Config (user's own keys)
+framemine.yaml
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/

@@ -1,0 +1,23 @@
+name: products
+display_name: "Product Recommendations"
+description: "Extract product recommendations from hauls, reviews, and unboxing posts"
+dedup_key: ["name", "brand"]
+output_columns: ["name", "brand", "category", "price_range", "source"]
+prompt: |
+  You are analyzing images from a social media post recommending or reviewing products.
+  The post may contain product shots, unboxing videos, "things I bought" hauls,
+  review cards, Amazon/shopping screenshots, or before-and-after comparisons.
+
+  Extract ALL unique products shown or mentioned across these images.
+  Return ONLY valid JSON — an array of objects:
+  [{"name": "Product Name", "brand": "Brand Name", "category": "skincare", "price_range": "$50-100"}]
+
+  Rules:
+  - "brand" should be the manufacturer or brand name; set to null if not visible
+  - "category" should be a short descriptor (e.g., "skincare", "kitchen gadget", "tech accessory", "clothing", "home decor")
+  - "price_range" should use one of these brackets if price is visible or inferrable: "under $25", "$25-50", "$50-100", "$100-250", "$250-500", "$500+"; set to null if unknown
+  - Use the exact product name as shown, not abbreviated
+  - Do not include usernames, hashtags, discount codes, or UI text as product names
+  - If a product appears multiple times (e.g., in different colors), list it once
+  - Separate distinct products even if from the same brand
+  - If the image shows a shopping cart or order confirmation, extract each line item

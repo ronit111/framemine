@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "framemine"
+version = "0.1.0"
+description = "Extract structured data from visual social media content using AI vision"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    {name = "Ronit Chidara"},
+]
+keywords = ["social-media", "extraction", "ai", "vision", "instagram", "tiktok", "books"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Text Processing :: General",
+]
+dependencies = [
+    "click>=8.1",
+    "google-genai>=1.0",
+    "Pillow>=10.0",
+    "openpyxl>=3.1",
+    "requests>=2.31",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-mock>=3.14",
+]
+
+[project.scripts]
+framemine = "framemine.cli:cli"
+
+[project.urls]
+Homepage = "https://github.com/ronitchidara/framemine"
+Repository = "https://github.com/ronitchidara/framemine"
+Issues = "https://github.com/ronitchidara/framemine/issues"
+
+[tool.setuptools.packages.find]
+include = ["framemine*"]
+
+[tool.setuptools.package-data]
+framemine = ["schemas/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: marks tests that need external tools (ffmpeg, sample files)",
+]

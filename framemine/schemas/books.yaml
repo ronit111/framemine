@@ -1,0 +1,24 @@
+name: books
+display_name: "Books & Reading"
+description: "Extract book, essay, article, and newsletter recommendations"
+dedup_key: ["title"]
+enrichment: books
+item_type_field: type
+output_columns: ["title", "author", "type", "genre", "source"]
+prompt: |
+  You are analyzing images from a social media post that recommends reading material.
+  The post may contain books, essays, articles, newsletters, or other reading recommendations.
+  Each image may show: a book cover, title text, a list of recommendations, or a screenshot of an article.
+
+  Extract ALL unique reading recommendations shown across these images.
+  Return ONLY valid JSON — an array of objects:
+  [{"title": "Exact Title", "author": "Author if visible", "type": "book|essay|article|newsletter|other"}]
+
+  Rules:
+  - "type" must be one of: book, essay, article, newsletter, other
+  - If author is not visible, set to null
+  - If type is ambiguous, use your best judgment based on visual cues
+  - Do not include duplicate items
+  - Only include actual titles, not usernames, hashtags, or UI text
+  - Use the full, correct title (not abbreviated)
+  - If the image shows a book cover, use the title on the cover

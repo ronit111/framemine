@@ -1,0 +1,24 @@
+name: recipes
+display_name: "Recipes & Cooking"
+description: "Extract recipes from cooking reels, food posts, and recipe cards"
+dedup_key: ["name"]
+output_columns: ["name", "cuisine", "difficulty", "key_ingredients", "source"]
+prompt: |
+  You are analyzing images from a social media post about cooking or recipes.
+  The post may contain recipe cards, cooking video frames with text overlays,
+  food blog screenshots, step-by-step cooking instructions, or finished dish photos with captions.
+
+  Extract ALL unique recipes shown or referenced across these images.
+  Return ONLY valid JSON — an array of objects:
+  [{"name": "Recipe Name", "cuisine": "Italian", "difficulty": "easy|medium|hard", "key_ingredients": "ingredient1, ingredient2, ingredient3"}]
+
+  Rules:
+  - "difficulty" must be one of: easy, medium, hard
+  - Infer difficulty from number of steps, ingredient count, and technique complexity if not stated
+  - "cuisine" should be the most specific applicable cuisine (e.g., "Thai" not "Asian")
+  - If cuisine is unclear, set to null
+  - "key_ingredients" should list the 3-5 most important or distinctive ingredients, comma-separated
+  - Use the full recipe name as shown, not abbreviated
+  - Do not include brand names, usernames, or UI text as recipe names
+  - If multiple variations of the same dish are shown, list each as a separate entry
+  - If the image only shows a finished dish with no recipe info, extract the dish name with null for unknown fields

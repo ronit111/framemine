@@ -1,0 +1,54 @@
+# Framemine configuration
+# Copy to ./framemine.yaml or ~/.config/framemine/config.yaml
+
+ai:
+  # Backend: "gemini" (free default) or "openai" (any OpenAI-compatible endpoint)
+  backend: gemini
+
+  gemini:
+    # Your Gemini API key (or set GEMINI_API_KEY env var)
+    # Get one free at: https://aistudio.google.com/apikey
+    # api_key: YOUR_KEY_HERE
+
+    # Models to rotate through (free-tier resilience)
+    models:
+      - gemini-2.5-flash
+      - gemini-2.5-flash-lite
+      - gemini-2.0-flash
+      - gemini-2.0-flash-lite
+
+    # Seconds between API calls
+    delay_seconds: 4.0
+
+    # Retries per model before rotating to next
+    max_retries_per_model: 3
+
+  openai:
+    # Your OpenAI API key (or set OPENAI_API_KEY env var)
+    # api_key: YOUR_KEY_HERE
+
+    # API base URL (change for Ollama, vLLM, etc.)
+    base_url: https://api.openai.com/v1
+
+    # Model name
+    model: gpt-4o-mini
+
+    # Seconds between API calls
+    delay_seconds: 1.0
+
+    # Max retries on failure
+    max_retries: 3
+
+download:
+  # Max video resolution (lower = smaller files, faster processing)
+  max_resolution: 720
+
+extraction:
+  # Scene change detection threshold (0.0-1.0, lower = more sensitive)
+  scene_threshold: 0.3
+
+  # Maximum keyframes to extract per video
+  max_keyframes: 15
+
+  # Fallback: extract one frame every N seconds (when scene detection finds nothing)
+  fallback_interval: 3
